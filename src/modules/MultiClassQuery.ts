@@ -3,10 +3,16 @@ import { ListenerSignature } from 'tiny-typed-emitter';
 import { ErrorCode } from '../types';
 import MultiStageOperation from './MultiStageOperation';
 
+export interface IMultiClassQueryEvents {
+  nextClass: () => void;
+}
+
+type TypeSafeMCQE<T> = Omit<T, keyof IMultiClassQueryEvents> & IMultiClassQueryEvents;
+
 export abstract class MultiClassQuery<Success, T extends ListenerSignature<T>> extends MultiStageOperation<
   Success,
   ErrorCode,
-  T
+  TypeSafeMCQE<T>
 > {
   protected school: string;
   private classIds: number[][];
@@ -25,23 +31,15 @@ export abstract class MultiClassQuery<Success, T extends ListenerSignature<T>> e
     this.classIds = givenClassIds;
   }
 
-  private async sleep() {
-    return new Promise((resolve) => {
-      setTimeout(resolve, this.sleepInterval);
-    });
+  protected emitNextClass() {
+    const params = [] as Parameters<TypeSafeMCQE<T>['nextClass']>; // this must be [] type
+    this.emit('nextClass', ...params);
   }
+
+  // running utilities
 
   protected abstract forEachClass(classId: number): Promise<void>;
   protected abstract result(): Success;
-
-  private async run() {
-    for (let grade of this.classIds) {
-      for (let classId of grade) {
-        if (classId == IscoolClassLookup.CLASS_NOT_FOUND) continue;
-        await this.forEachClass(classId);
-      }
-    }
-  }
 
   public async begin(): Promise<void> {
     try {
@@ -52,9 +50,23 @@ export abstract class MultiClassQuery<Success, T extends ListenerSignature<T>> e
       this.emitError(ErrorCode.ERROR_FETCHING_CLASSES);
     } finally {
       // continue with given classes
-      await this.run();
+      for (let grade of this.classIds) {
+        for (let classId of grade) {
+          if (classId == IscoolClassLookup.CLASS_NOT_FOUND) continue;
+          await this.forEachClass(classId);
+          this.emitNextClass();
+        }
+      }
       this.emitReady(this.result());
     }
+  }
+
+  // Fetching utilities
+
+  private async sleep() {
+    return new Promise((resolve) => {
+      setTimeout(resolve, this.sleepInterval);
+    });
   }
 
   protected async fetchUntilResult<T extends {}>(...args: Parameters<typeof fetchDataSource>): Promise<T> {

@@ -9,7 +9,8 @@ export interface MultiStageOperationEvents<Success, Error> {
   delay: () => void;
 }
 
-type TypeSafeMSOE<Success, Error, T> = Omit<T, 'error' | 'ready' | 'delay'> & MultiStageOperationEvents<Success, Error>;
+type TypeSafeMSOE<Success, Error, T> = Omit<T, keyof MultiStageOperationEvents<Success, Error>> &
+  MultiStageOperationEvents<Success, Error>;
 
 /**
  * Represents an operation that takes a long time to process
