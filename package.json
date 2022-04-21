@@ -1,0 +1,29 @@
+{
+  "name": "@yanshoof/operations",
+  "version": "0.1.0",
+  "description": "Long tasks provided with real-time progress via WebSocket",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yanshoof-app/operations.git"
+  },
+  "keywords": [
+    "WebSocket",
+    "Typescript",
+    "OOP"
+  ],
+  "author": "Yanshoof <yanshoof.app@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yanshoof-app/operations/issues"
+  },
+  "homepage": "https://github.com/yanshoof-app/operations#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.25",
+    "@yanshoof/types": "^1.1.0",
+    "typescript": "^4.6.3"
+  }
+}
