@@ -6,7 +6,8 @@
     "outDir": "./lib",
     "strict": true,
     "suppressImplicitAnyIndexErrors": true,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "downlevelIteration": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*"]
