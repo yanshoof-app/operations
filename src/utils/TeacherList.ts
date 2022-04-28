@@ -23,7 +23,7 @@ export class TeacherList extends TypedEmitter<ITeacherListEvents> {
   }
 
   public fromIscool(schedule: ILessonArrMemberIscool[]) {
-    for (let lesson of schedule) {
+    for (const lesson of schedule) {
       lesson.Lessons.forEach(({ Teacher }) => {
         if (Teacher !== '') {
           if (!this.teacherSet.has(Teacher)) {

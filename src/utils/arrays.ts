@@ -8,7 +8,7 @@
  * @param defaultValue the value to put in all matrix elements, defaults to {}
  * @returns a matrix in the size of dim1*dim2
  */
-export function initMatrix<T>(dim1: number, dim2: number, defaultValue: any = {}): T[][] {
+export function initMatrix<T>(dim1: number, dim2: number, defaultValue: unknown = {}): T[][] {
   const result: T[][] = new Array<T[]>(dim1);
   for (let i = 0; i < dim1; i++) {
     result[i] = new Array<T>(dim2);

@@ -39,7 +39,7 @@ export class TeacherTimetable
   }
 
   public fromSchedule(schedule: ILessonArrMemberIscool[]) {
-    for (let lesson of schedule) {
+    for (const lesson of schedule) {
       const day = lesson.Day;
       const hourIndex = lesson.Hour; // 0 hours are possible as well.
 
@@ -69,7 +69,7 @@ export class TeacherTimetable
    * timetable.applyChanges(changes);
    */
   public applyChanges(changes: IChangeIscool[]) {
-    for (let changeObj of changes) {
+    for (const changeObj of changes) {
       const modification = ISCOOL.toModification(changeObj);
       const day = ISCOOL.toDate(changeObj.Date).getDay() as DayOfWeek;
       const hour = changeObj.Hour;

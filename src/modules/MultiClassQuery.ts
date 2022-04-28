@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { fetchDataSource, HTTPError, IscoolClassLookup } from '@yanshoof/iscool';
 import { ListenerSignature } from 'tiny-typed-emitter';
 import { ErrorCode } from '../types';
@@ -50,8 +51,8 @@ export abstract class MultiClassQuery<Success, T extends ListenerSignature<T>> e
       this.emitError(ErrorCode.ERROR_FETCHING_CLASSES);
     } finally {
       // continue with given classes
-      for (let grade of this.classIds) {
-        for (let classId of grade) {
+      for (const grade of this.classIds) {
+        for (const classId of grade) {
           if (classId == IscoolClassLookup.CLASS_NOT_FOUND) continue;
           await this.forEachClass(classId);
           this.emitNextClass();
