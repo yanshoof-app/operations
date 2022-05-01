@@ -1,6 +1,7 @@
 import { IncomingMessage } from 'http';
 import { Duplex } from 'stream';
-import { WebSocketServer, WebSocket } from 'ws';
+import { WebSocketServer } from 'ws';
+import { WebEmitter } from './WebEmitter';
 
 /**
  * A Wrapper class for a websocket server
@@ -15,13 +16,14 @@ export abstract class YanshoofWebSocketServer<TParams> {
    */
   constructor() {
     this.wss = new WebSocketServer({ noServer: true });
-    this.wss.on('connection', (ws) => {
+    this.wss.on('connection', async (ws) => {
       try {
         const { searchParams } = new URL(ws.url);
         const params = this.getParamsFromURL(searchParams);
-        this.onConnectionOpen(ws, params);
+        const webEmitter = new WebEmitter(ws);
+        await this.onConnectionOpen(webEmitter, params);
       } catch (err) {
-        ws.close();
+        ws.close(1003); // unsupported data
       }
     });
   }
@@ -51,5 +53,5 @@ export abstract class YanshoofWebSocketServer<TParams> {
    * @param ws the connection opened
    * @param params the parameters sent with it
    */
-  protected abstract onConnectionOpen(ws: WebSocket, params: TParams): void;
+  protected abstract onConnectionOpen(ws: WebEmitter, params: TParams): Promise<void>;
 }
