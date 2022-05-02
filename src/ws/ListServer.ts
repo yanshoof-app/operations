@@ -18,23 +18,13 @@ export class ListServer extends YanshoofWebSocketServer<ITeacherListQueryParams>
   }
   protected async onConnectionOpen(ws: WebEmitter, params: ITeacherListQueryParams): Promise<void> {
     const query = new TeacherListQuery(params);
-    query.on('nextClass', () => {
-      ws.send('newClass');
-    });
     query.on('teacherAdded', (teacherName) => {
       ws.send('teacherAdded', { teacherName });
     });
-    query.on('error', () => {
-      ws.send('error');
-      ws.close(1011);
-    });
-    query.on('delay', () => {
-      ws.send('delay');
-    });
-    query.on('ready', () => {
-      ws.send('done');
-      ws.close(1000);
-    });
+    query.on('nextClass', WebEmitter.handleNextClass(ws));
+    query.on('error', WebEmitter.handleError(ws));
+    query.on('delay', WebEmitter.handleDelay(ws));
+    query.on('ready', WebEmitter.handleReady(ws));
     await query.begin();
   }
 }

@@ -20,26 +20,16 @@ export class TimetableServer extends YanshoofWebSocketServer<ITimetableQueryPara
   }
   protected async onConnectionOpen(ws: WebEmitter, params: ITimetableQueryParams): Promise<void> {
     const query = new TeacherTimetableQuery(params);
-    query.on('nextClass', () => {
-      ws.send('newClass');
-    });
     query.on('newLesson', (day, hour, lesson) => {
       ws.send('newLesson', { day, hour, lesson });
     });
     query.on('newChange', (day, hour, modification) => {
       ws.send('newChange', { day, hour, modification });
     });
-    query.on('error', () => {
-      ws.send('error');
-      ws.close(1011);
-    });
-    query.on('delay', () => {
-      ws.send('delay');
-    });
-    query.on('ready', () => {
-      ws.send('done');
-      ws.close(1000);
-    });
+    query.on('nextClass', WebEmitter.handleNextClass(ws));
+    query.on('error', WebEmitter.handleError(ws));
+    query.on('delay', WebEmitter.handleDelay(ws));
+    query.on('ready', WebEmitter.handleReady(ws));
     await query.begin();
   }
 }

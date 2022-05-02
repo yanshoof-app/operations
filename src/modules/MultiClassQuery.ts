@@ -20,6 +20,7 @@ export abstract class MultiClassQuery<Success, T extends ListenerSignature<T>> e
   private sleepInterval = 100; // 100 ms
 
   private static MAX_SLEEP_INTERVAL = 7000; // 5 seconds
+  private static TIMEOUT_EXCEEDED = 'Timeout exceeded';
 
   /**
    * Constrcuts a new MultiClassQuery object
@@ -48,14 +49,22 @@ export abstract class MultiClassQuery<Success, T extends ListenerSignature<T>> e
       if (queriedLookup.gradeSize > this.classIds.length) this.classIds = queriedLookup.classIds;
     } catch (err) {
       console.log(err);
-      this.emitError(ErrorCode.ERROR_FETCHING_CLASSES);
+      if (!this.classIds.length)
+        // no classes given, and error
+        this.emitError(ErrorCode.ERROR_FETCHING_CLASSES);
     } finally {
       // continue with given classes
       for (const grade of this.classIds) {
         for (const classId of grade) {
           if (classId == IscoolClassLookup.CLASS_NOT_FOUND) continue;
-          await this.forEachClass(classId);
-          this.emitNextClass();
+          try {
+            await this.forEachClass(classId);
+            this.emitNextClass();
+          } catch (err) {
+            if (err instanceof Error && err.message === MultiClassQuery.TIMEOUT_EXCEEDED)
+              this.emitError(ErrorCode.TIMEOUT_EXCEEDED);
+            else this.emitError(ErrorCode.UNEXPECTED_ERROR_DURING_FETCH);
+          }
         }
       }
       this.emitReady(this.result());
@@ -87,9 +96,9 @@ export abstract class MultiClassQuery<Success, T extends ListenerSignature<T>> e
             hasSleptFlag = false;
           }
         } // another error
-        else this.emitError(ErrorCode.UNEXPECTED_ERROR_DURING_CLASS_FETCH);
+        else throw new Error('Unexpected error'); // should be caught by the try-catch at the begin() method
       }
     }
-    throw new Error('Timeout exceeded');
+    throw new Error(MultiClassQuery.TIMEOUT_EXCEEDED); // should be caught by the try-catch at the begin() method
   }
 }
