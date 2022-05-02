@@ -9,7 +9,9 @@ export class TimetableServer extends YanshoofWebSocketServer<ITimetableQueryPara
   protected getParamsFromURL(searchParams: URLSearchParams): ITimetableQueryParams {
     const school = searchParams.get('school');
     const teacherName = searchParams.get('teacherName');
-    const classesStr = searchParams.get('classesStr');
+    const classesStr = searchParams.get('classes');
+
+    console.log(school, teacherName, classesStr);
 
     if (!school || !teacherName) throw new Error('Unsupported Data');
     return {

@@ -12,7 +12,7 @@ export class WebEmitter {
 
   public send<T extends object>(eventName: string, args: T = {} as T) {
     return new Promise<void>((res, rej) => {
-      this.ws.send({ event: eventName, ...args }, (err) => {
+      this.ws.send(JSON.stringify({ event: eventName, ...args }), (err) => {
         if (err) rej(err);
         else res();
       });

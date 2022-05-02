@@ -1,5 +1,6 @@
 import { IncomingMessage } from 'http';
 import { Duplex } from 'stream';
+import { URL } from 'url';
 import { WebSocketServer } from 'ws';
 import { WebEmitter } from './WebEmitter';
 
@@ -16,13 +17,14 @@ export abstract class YanshoofWebSocketServer<TParams> {
    */
   constructor() {
     this.wss = new WebSocketServer({ noServer: true });
-    this.wss.on('connection', async (ws) => {
+    this.wss.on('connection', async (ws, { searchParams }: URL) => {
       try {
-        const { searchParams } = new URL(ws.url);
         const params = this.getParamsFromURL(searchParams);
         const webEmitter = new WebEmitter(ws);
         await this.onConnectionOpen(webEmitter, params);
       } catch (err) {
+        console.log(err);
+        ws.send(JSON.stringify({ err: 'UNSUPPORTED_DATA', statusCode: 1003 }));
         ws.close(1003); // unsupported data
       }
     });
@@ -31,12 +33,13 @@ export abstract class YanshoofWebSocketServer<TParams> {
   /**
    * Upgrade a connection to ws and connect to server
    * @param request the request to be uupgraded
+   * @param url the parsed URL that came with the request
    * @param socket the socket to be upgraded
    * @param head the upgrade head
    */
-  async handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer) {
+  async handleUpgrade(request: IncomingMessage, url: URL, socket: Duplex, head: Buffer) {
     this.wss.handleUpgrade(request, socket, head, (ws) => {
-      this.wss.emit('connection', ws);
+      this.wss.emit('connection', ws, url);
     });
   }
 
