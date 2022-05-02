@@ -2,6 +2,17 @@ import { IScheduleResponse } from '@yanshoof/iscool';
 import { ITeacherListEvents, TeacherList } from '../utils/TeacherList';
 import { MultiClassQuery } from './MultiClassQuery';
 
+export interface ITeacherListQueryParams {
+  /**
+   * The school to query
+   */
+  school: string;
+  /**
+   * The fallback classId matrix
+   */
+  givenClassIds: number[][];
+}
+
 /**
  * Represents a teacher list query
  * @author Itay Schechner
@@ -13,10 +24,9 @@ export class TeacherListQuery extends MultiClassQuery<string[], ITeacherListEven
 
   /**
    * Constructs a new TeacherListQuery object
-   * @param school the school whose teachers are queried
-   * @param givenClassIds the classId matrix as given by the client
+   * @param params the params required for the query
    */
-  constructor(school: string, givenClassIds: number[][]) {
+  constructor({ school, givenClassIds }: ITeacherListQueryParams) {
     super(school, givenClassIds);
     this.teacherList = new TeacherList();
     this.teacherList.on('teacherAdded', (name) => {

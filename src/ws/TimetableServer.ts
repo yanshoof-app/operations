@@ -30,6 +30,7 @@ export class TimetableServer extends YanshoofWebSocketServer<ITimetableQueryPara
       ws.send('newChange', { day, hour, modification });
     });
     query.on('error', () => {
+      ws.send('error');
       ws.close(1011);
     });
     query.on('delay', () => {
