@@ -11,8 +11,6 @@ export class TimetableServer extends YanshoofWebSocketServer<ITimetableQueryPara
     const teacherName = searchParams.get('teacherName');
     const classesStr = searchParams.get('classes');
 
-    console.log(school, teacherName, classesStr);
-
     if (!school || !teacherName) throw new Error('Unsupported Data');
     return {
       school,
@@ -38,6 +36,7 @@ export class TimetableServer extends YanshoofWebSocketServer<ITimetableQueryPara
       ws.send('delay');
     });
     query.on('ready', () => {
+      ws.send('done');
       ws.close(1000);
     });
     await query.begin();
