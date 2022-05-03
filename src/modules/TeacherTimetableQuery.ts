@@ -3,6 +3,21 @@ import { ITeacherLesson } from '@yanshoof/types';
 import { ITeacherTimetableEvents, TeacherTimetable } from '../utils/TeacherTimetable';
 import { MultiClassQuery } from './MultiClassQuery';
 
+export interface ITimetableQueryParams {
+  /**
+   * The school to query
+   */
+  school: string;
+  /**
+   * The teacher name to search for
+   */
+  teacherName: string;
+  /**
+   * The class id matrix for fallback
+   */
+  givenClassIds: number[][];
+}
+
 /**
  * Handles building the teacher timetable and notifying about errors
  * @author Itay Schechner
@@ -20,11 +35,9 @@ export class TeacherTimetableQuery extends MultiClassQuery<ITeacherLesson[][], I
 
   /**
    * Constructs a new TeacherTimetableQuery object
-   * @param school the name of the school
-   * @param teacherName the name of the teacher
-   * @param givenClassIds the classIds as sent by the client
+   * @param params the parameters required
    */
-  constructor(school: string, teacherName: string, givenClassIds: number[][]) {
+  constructor({ school, teacherName, givenClassIds }: ITimetableQueryParams) {
     super(school, givenClassIds);
     this.teacherTimetable = new TeacherTimetable(teacherName);
     this.teacherTimetable.on('newChange', (...args) => this.emit('newChange', ...args));
