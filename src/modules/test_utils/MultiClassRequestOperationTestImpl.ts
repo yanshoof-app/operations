@@ -1,4 +1,4 @@
-import { ILessonArrMemberIscool } from '@yanshoof/iscool';
+import { ILessonArrMemberIscool, IscoolRequestQueue } from '@yanshoof/iscool';
 import { TeacherList } from '../../utils/TeacherList';
 import { MultiClassRequestOperation } from '../MultiClassReuqestOperation';
 
@@ -13,7 +13,7 @@ export class MultiClassRequestOperationTestImpl extends MultiClassRequestOperati
    * @param school the school to fetch
    */
   constructor(school: string) {
-    super(school);
+    super(new IscoolRequestQueue(), school);
     this.successfulRequests = 0;
   }
 

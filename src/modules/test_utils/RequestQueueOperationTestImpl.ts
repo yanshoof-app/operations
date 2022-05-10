@@ -7,6 +7,7 @@ import {
   IScheduleResponse,
   IChangesResponse,
   ISCOOL,
+  IscoolRequestQueue,
 } from '@yanshoof/iscool';
 import { TeacherList } from '../../utils/TeacherList';
 import { RequestQueueOperation } from '../RequestQueueOperation';
@@ -14,7 +15,7 @@ import { RequestQueueOperation } from '../RequestQueueOperation';
 export class RequestQueueOperationTestImpl extends RequestQueueOperation<number, object> {
   private finishedRequests: number;
   constructor(school: string) {
-    super();
+    super(new IscoolRequestQueue());
     this.finishedRequests = 0;
     this.enqueueRequest('classes', school, 0);
   }

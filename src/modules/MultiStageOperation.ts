@@ -34,12 +34,22 @@ abstract class MultiStageOperation<
     this.emit('delay', ...params);
   }
 
-  protected emitReady(res: Success) {
-    const params = [res] as Parameters<TypeSafeMSOE<Success, Error, T>['ready']>; // this must be [Success] type
+  protected emitReady() {
+    const params = [this.getResult()] as Parameters<TypeSafeMSOE<Success, Error, T>['ready']>; // this must be [Success] type
     this.emit('ready', ...params);
   }
 
   public abstract begin(): Promise<void>;
+
+  /**
+   * Return the result of the operation
+   */
+  protected abstract getResult(): Success;
+
+  /**
+   * Abort the operation
+   */
+  public abstract abort(): void;
 }
 
 export default MultiStageOperation;

@@ -28,10 +28,11 @@ export abstract class RequestQueueOperation<
 
   /**
    * Construct a new RequestQueueOperation
+   * @param queue the request queue to use
    */
-  constructor() {
+  constructor(queue: IscoolRequestQueue) {
     super();
-    this.queue = new IscoolRequestQueue();
+    this.queue = queue;
     this.pendingRequests = new Set();
     this.queue.on('sleep', (time) => {
       this.emitDelay(time * this.queue.size);
@@ -78,11 +79,6 @@ export abstract class RequestQueueOperation<
     err: Error,
   ): void;
 
-  /**
-   * Get the result of the operation
-   */
-  protected abstract getResult(): TSuccess;
-
   /** Enqueue a request.
    * Accept as params the paramters of the fetchDataSource function
    * @throws error if enqueueing failed
@@ -98,7 +94,7 @@ export abstract class RequestQueueOperation<
         this.onScheduleRequestDone(task.school, task.classId as number, (res as IScheduleResponse).Schedule);
       else if (task.fetchFor === 'changes')
         this.onChangesRequestDone(task.school, task.classId as number, (res as IChangesResponse).Changes);
-      if (!this.pendingRequests.size) this.emitReady(this.getResult());
+      if (!this.pendingRequests.size) this.emitReady();
     });
 
     task.on('error', (err) => {
@@ -112,7 +108,7 @@ export abstract class RequestQueueOperation<
   /**
    * Abort all requests
    */
-  protected abortAll() {
-    for (const req of this.pendingRequests) req.abort();
+  public abort() {
+    this.pendingRequests.forEach((req) => req.abort());
   }
 }

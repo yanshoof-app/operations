@@ -4,6 +4,7 @@ import {
   IClassesResponse,
   IScheduleResponse,
   IChangesResponse,
+  IscoolRequestQueue,
 } from '@yanshoof/iscool';
 import { ListenerSignature } from 'tiny-typed-emitter';
 import { ErrorCode } from '../types';
@@ -22,12 +23,13 @@ export abstract class MultiClassRequestOperation<
   private classIds: number[][];
 
   /**
-   *
+   * Constructs a new MultiClassRequestOperation
+   * @param queue to request queue to use
    * @param school the school to fetch
    * @param fallbackClassIds the fallback class ids, if existing
    */
-  constructor(school: string, fallbackClassIds: number[][] = []) {
-    super();
+  constructor(queue: IscoolRequestQueue, school: string, fallbackClassIds: number[][] = []) {
+    super(queue);
     this.classIds = fallbackClassIds;
     this.enqueueRequest('classes', school, 0); // enqueue classes fetch
   }
