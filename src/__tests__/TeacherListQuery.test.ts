@@ -22,7 +22,7 @@ describe('tests the teacher lookup method', () => {
     query.on('teacherAdded', (teacher) => {
       console.log('Teacher found', teacher);
     });
-    /*
+    /* TODO
     query.on('nextClass', () => {
       console.log('Next class');
     });

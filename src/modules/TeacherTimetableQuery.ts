@@ -1,7 +1,6 @@
 import { IScheduleResponse, IChangesResponse } from '@yanshoof/iscool';
 import { ITeacherLesson } from '@yanshoof/types';
 import { ITeacherTimetableEvents, TeacherTimetable } from '../utils/TeacherTimetable';
-import { MultiClassQuery } from './MultiClassQuery';
 
 export interface ITimetableQueryParams {
   /**

@@ -58,7 +58,7 @@ export class TeacherTimetable
       this.emit('newLesson', day, hourIndex, this.lessons[day][hourIndex]);
     } // end of for
 
-    return this;
+    return this; // TODO: Return if changes added
   }
 
   /**
