@@ -58,7 +58,6 @@ export abstract class MultiClassRequestOperation<
     err: Error,
   ): void {
     if (HTTPError.isHTTPError(err) && err.code === HTTPError.TOO_MANY_REQUESTS) return;
-
     if (request.fetchFor === 'classes' && !this.classIds.length) {
       // check if class lookup failed and no fallback provided
       this.emitError(ErrorCode.ERROR_FETCHING_CLASSES);
