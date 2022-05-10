@@ -6,7 +6,7 @@ import { ListenerSignature, TypedEmitter } from 'tiny-typed-emitter';
 export interface MultiStageOperationEvents<Success, Error> {
   ready: (result: Success) => void;
   error: (err: Error) => void;
-  delay: () => void;
+  delay: (time: number) => void;
 }
 
 type TypeSafeMSOE<Success, Error, T> = Omit<T, keyof MultiStageOperationEvents<Success, Error>> &
@@ -29,8 +29,8 @@ abstract class MultiStageOperation<
     this.emit('error', ...params);
   }
 
-  protected emitDelay() {
-    const params = [] as Parameters<TypeSafeMSOE<Success, Error, T>['delay']>; // this must be [] type
+  protected emitDelay(time: number) {
+    const params = [time] as Parameters<TypeSafeMSOE<Success, Error, T>['delay']>; // this must be [] type
     this.emit('delay', ...params);
   }
 

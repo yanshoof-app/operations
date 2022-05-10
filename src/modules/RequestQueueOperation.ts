@@ -32,6 +32,9 @@ export abstract class RequestQueueOperation<
     super();
     this.queue = new IscoolRequestQueue();
     this.pendingRequests = new Set();
+    this.queue.on('sleep', (time) => {
+      this.emitDelay(time * this.queue.size);
+    });
   }
 
   public async begin(): Promise<void> {
