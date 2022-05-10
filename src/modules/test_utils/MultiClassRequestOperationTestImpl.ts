@@ -25,6 +25,10 @@ export class MultiClassRequestOperationTestImpl extends MultiClassRequestOperati
     console.log('Teachers in schedule: ', list.teachers);
   }
 
+  protected onChangesRequestDone(): void {
+    // do nothing
+  }
+
   protected getResult(): number {
     return this.successfulRequests;
   }

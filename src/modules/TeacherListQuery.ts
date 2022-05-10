@@ -40,6 +40,10 @@ export class TeacherListQuery extends MultiClassRequestOperation<string[], ITeac
     this.teacherList.fromIscool(schedule);
   }
 
+  protected onChangesRequestDone(): void {
+    // no changes requests in operation
+  }
+
   protected getResult(): string[] {
     return this.teacherList.teachers;
   }

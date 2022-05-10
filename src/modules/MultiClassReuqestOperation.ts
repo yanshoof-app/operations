@@ -48,11 +48,6 @@ export abstract class MultiClassRequestOperation<
     }
   }
 
-  // fallback implmentation, implementation of method not required
-  protected onChangesRequestDone(): void {
-    throw new Error('Method not implemented.');
-  }
-
   protected onUnexpectedRequestError(
     request: IscoolFetchTask<IClassesResponse | IScheduleResponse | IChangesResponse>,
     err: Error,
