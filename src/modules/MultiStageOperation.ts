@@ -17,7 +17,7 @@ type TypeSafeMSOE<Success, Error, T> = Omit<T, keyof MultiStageOperationEvents<S
  * @abstract
  * @extends TypedEmitter for the ability to emit and subscribe to events
  * @author Itay Schechner
- * @version 2022.0.1
+ * @version 1.0.0
  */
 abstract class MultiStageOperation<
   Success,
