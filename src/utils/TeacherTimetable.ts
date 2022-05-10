@@ -65,6 +65,7 @@ export class TeacherTimetable extends TypedEmitter<ITeacherTimetableEvents> {
    * timetable.applyChanges(changes);
    */
   public applyChanges(changes: IChangeIscool[]) {
+    // TODO: Migrate to IscoolDate
     for (const changeObj of changes) {
       const modification = ISCOOL.toModification(changeObj);
       const day = ISCOOL.toDate(changeObj.Date).getDay() as DayOfWeek;
