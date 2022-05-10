@@ -105,4 +105,11 @@ export abstract class RequestQueueOperation<
     this.queue.enqueue(task);
     this.pendingRequests.add(task);
   }
+
+  /**
+   * Abort all requests
+   */
+  protected abortAll() {
+    for (const req of this.pendingRequests) req.abort();
+  }
 }
