@@ -11,6 +11,7 @@ import {
   IScheduleResponse,
   IChangesResponse,
 } from '@yanshoof/iscool';
+import { ErrorCode } from '../types';
 
 /**
  * Represents an operation with an iscool request queue
@@ -21,7 +22,7 @@ import {
 export abstract class RequestQueueOperation<
   TSuccess,
   TEvents extends ListenerSignature<TEvents> = ListenerSignature<unknown>,
-> extends MultiStageOperation<TSuccess, Error, TEvents> {
+> extends MultiStageOperation<TSuccess, ErrorCode, TEvents> {
   private queue: IscoolRequestQueue;
   private pendingRequests: Set<IscoolFetchTask<IClassesResponse | IScheduleResponse | IChangesResponse>>;
 
@@ -102,7 +103,6 @@ export abstract class RequestQueueOperation<
 
     task.on('error', (err) => {
       this.onUnexpectedRequestError(task, err);
-      this.emitError(err);
     });
 
     this.queue.enqueue(task);

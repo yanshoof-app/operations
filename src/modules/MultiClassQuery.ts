@@ -10,6 +10,9 @@ export interface IMultiClassQueryEvents {
 
 type TypeSafeMCQE<T> = Omit<T, keyof IMultiClassQueryEvents> & IMultiClassQueryEvents;
 
+/**
+ * @deprecated
+ */
 export abstract class MultiClassQuery<Success, T extends ListenerSignature<T>> extends MultiStageOperation<
   Success,
   ErrorCode,
@@ -88,7 +91,7 @@ export abstract class MultiClassQuery<Success, T extends ListenerSignature<T>> e
       } catch (err) {
         if (HTTPError.isHTTPError(err) && err.code == 429) {
           // too many requests
-          this.emitDelay();
+          this.emitDelay(this.sleepInterval);
           await this.sleep();
           if (!hasSleptFlag) hasSleptFlag = true;
           else {
