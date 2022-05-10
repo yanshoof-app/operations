@@ -1,9 +1,6 @@
-import { IscoolClassLookup, IscoolRequestQueue } from '@yanshoof/iscool';
+import { IscoolRequestQueue } from '@yanshoof/iscool';
 import { TeacherListQuery } from '../modules/TeacherListQuery';
 import axios from 'axios';
-import MultiStageOperation from '../modules/MultiStageOperation';
-import { ErrorCode } from '../types';
-import { ITeacherListEvents } from '../utils/TeacherList';
 
 axios.defaults.adapter = require('axios/lib/adapters/http');
 
