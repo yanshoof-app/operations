@@ -5,6 +5,7 @@ import {
   IScheduleResponse,
   IChangesResponse,
   IscoolRequestQueue,
+  HTTPError,
 } from '@yanshoof/iscool';
 import { ListenerSignature } from 'tiny-typed-emitter';
 import { ErrorCode } from '../types';
@@ -54,7 +55,10 @@ export abstract class MultiClassRequestOperation<
 
   protected onUnexpectedRequestError(
     request: IscoolFetchTask<IClassesResponse | IScheduleResponse | IChangesResponse>,
+    err: Error,
   ): void {
+    if (HTTPError.isHTTPError(err) && err.code === HTTPError.TOO_MANY_REQUESTS) return;
+
     if (request.fetchFor === 'classes' && !this.classIds.length) {
       // check if class lookup failed and no fallback provided
       this.emitError(ErrorCode.ERROR_FETCHING_CLASSES);
