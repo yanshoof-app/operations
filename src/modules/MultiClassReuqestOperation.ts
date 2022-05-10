@@ -39,7 +39,7 @@ export abstract class MultiClassRequestOperation<
 
     for (const grade of this.classIds) {
       for (const classId of grade) {
-        if (classId !== IscoolClassLookup.CLASS_NOT_FOUND) continue;
+        if (classId === IscoolClassLookup.CLASS_NOT_FOUND) continue;
         this.enqueueRequest('schedule', school, classId);
       }
     }
