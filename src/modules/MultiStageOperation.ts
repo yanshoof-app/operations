@@ -39,6 +39,14 @@ abstract class MultiStageOperation<
     this.emit('ready', ...params);
   }
 
+  /** Type-safe subscribe to delay, error and ready events */
+  public subscribe<K extends keyof MultiStageOperationEvents<Success, Error>>(
+    event: K,
+    cb: MultiStageOperationEvents<Success, Error>[K],
+  ) {
+    this.on(event, cb as TypeSafeMSOE<Success, Error, T>[typeof event]);
+  }
+
   public abstract begin(): Promise<void>;
 
   /**
