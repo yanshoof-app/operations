@@ -11,6 +11,10 @@ import { ListenerSignature } from 'tiny-typed-emitter';
 import { ErrorCode } from '../types';
 import { RequestQueueOperation } from './RequestQueueOperation';
 
+export interface NextClassEvent {
+  nextClass: () => void;
+}
+
 /**
  * A layer of implementation that queries the schedule of multiple classes
  * @abstract
@@ -20,7 +24,7 @@ import { RequestQueueOperation } from './RequestQueueOperation';
 export abstract class MultiClassRequestOperation<
   TSuccess,
   TEvents extends ListenerSignature<TEvents>,
-> extends RequestQueueOperation<TSuccess, TEvents> {
+> extends RequestQueueOperation<TSuccess, TEvents & NextClassEvent> {
   private classIds: number[][];
 
   /**

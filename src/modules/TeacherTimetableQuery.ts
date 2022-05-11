@@ -49,10 +49,12 @@ export class TeacherTimetableQuery extends MultiClassRequestOperation<ITeacherLe
   protected onScheduleRequestDone(school: string | number, classId: number, schedule: ILessonArrMemberIscool[]): void {
     const hasAddedNewLessons = this.teacherTimetable.fromSchedule(schedule);
     if (hasAddedNewLessons) this.enqueueRequest('changes', school, classId);
+    else this.emit('nextClass');
   }
 
   protected onChangesRequestDone(_school: string | number, _classId: number, changes: IChangeIscool[]): void {
     this.teacherTimetable.applyChanges(changes);
+    this.emit('nextClass');
   }
 
   protected getResult(): ITeacherLesson[][] {

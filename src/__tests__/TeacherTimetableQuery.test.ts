@@ -26,11 +26,9 @@ describe('Tests multi stage operations', () => {
     query.on('newLesson', (day, hour, lesson) => {
       console.log('lesson found!', day, hour, lesson);
     });
-    /* TODO
     query.on('nextClass', () => {
       console.log('Next class');
     });
-    */
     query.on('ready', (timetable) => {
       console.log('Done!', timetable);
     });

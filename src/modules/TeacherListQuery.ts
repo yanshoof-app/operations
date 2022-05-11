@@ -38,6 +38,7 @@ export class TeacherListQuery extends MultiClassRequestOperation<string[], ITeac
     schedule: ILessonArrMemberIscool[],
   ): void {
     this.teacherList.fromIscool(schedule);
+    this.emit('nextClass');
   }
 
   protected onChangesRequestDone(): void {
