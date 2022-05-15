@@ -1,11 +1,15 @@
+import { IscoolRequestQueue } from '@yanshoof/iscool';
+import MultiStageOperation from '../modules/MultiStageOperation';
 import { ITeacherListQueryParams, TeacherListQuery } from '../modules/TeacherListQuery';
+import { ErrorCode } from '../types';
+import { ITeacherListEvents } from '../utils/TeacherList';
+import { RequestQueueServer } from './RequestQueueServer';
 import { WebEmitter } from './WebEmitter';
-import { YanshoofWebSocketServer } from './WebSocketServer';
 
 /**
  * Represents the server that handles list requests
  */
-export class ListServer extends YanshoofWebSocketServer<ITeacherListQueryParams> {
+export class ListServer extends RequestQueueServer<ITeacherListQueryParams, string[], ITeacherListEvents> {
   protected getParamsFromURL(searchParams: URLSearchParams): ITeacherListQueryParams {
     const school = searchParams.get('school');
     const classesStr = searchParams.get('classes');
@@ -16,15 +20,19 @@ export class ListServer extends YanshoofWebSocketServer<ITeacherListQueryParams>
       givenClassIds: JSON.parse(classesStr) || [],
     };
   }
-  protected async onConnectionOpen(ws: WebEmitter, params: ITeacherListQueryParams): Promise<void> {
-    const query = new TeacherListQuery(params);
+
+  protected createOperation(
+    queue: IscoolRequestQueue,
+    ws: WebEmitter,
+    params: ITeacherListQueryParams,
+  ): MultiStageOperation<string[], ErrorCode, ITeacherListEvents> {
+    const query = new TeacherListQuery(queue, params);
     query.on('teacherAdded', (teacherName) => {
       ws.send('teacherAdded', { teacherName });
     });
-    query.on('nextClass', WebEmitter.handleNextClass(ws));
-    query.on('error', WebEmitter.handleError(ws));
-    query.on('delay', WebEmitter.handleDelay(ws));
-    query.on('ready', WebEmitter.handleReady(ws));
-    await query.begin();
+    query.on('nextClass', () => {
+      ws.send('nextClass');
+    });
+    return query;
   }
 }
