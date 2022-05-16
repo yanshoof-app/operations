@@ -1,13 +1,5 @@
 import { ILessonArrMemberIscool, ISCOOL, IChangeIscool } from '@yanshoof/iscool';
-import {
-  DayOfWeek,
-  HourOfDay,
-  ITeacherLesson,
-  IModification,
-  ITimetable,
-  HOURS_OF_DAY,
-  DAYS_IN_WEEK,
-} from '@yanshoof/types';
+import { DayOfWeek, HourOfDay, ITeacherLesson, IModification, HOURS_OF_DAY, DAYS_IN_WEEK } from '@yanshoof/types';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { initMatrix } from './arrays';
 
@@ -24,10 +16,7 @@ export interface ITeacherTimetableEvents {
  * const teacherTimetable = new TeacherTimetable(teacher);
  * teacherTimetable.on('newLesson', () => {});
  */
-export class TeacherTimetable
-  extends TypedEmitter<ITeacherTimetableEvents>
-  implements ITimetable<ITeacherLesson, ILessonArrMemberIscool[]>
-{
+export class TeacherTimetable extends TypedEmitter<ITeacherTimetableEvents> {
   readonly lessons: ITeacherLesson[][];
   private commonTeacher: string;
 
@@ -38,7 +27,13 @@ export class TeacherTimetable
     this.commonTeacher = commonTeacher;
   }
 
+  /**
+   * Applies lessons
+   * @param schedule the schedule to apply
+   * @returns true if applied new lessons, false otherwise
+   */
   public fromSchedule(schedule: ILessonArrMemberIscool[]) {
+    let hadAddedNewLessons = false;
     for (const lesson of schedule) {
       const day = lesson.Day;
       const hourIndex = lesson.Hour; // 0 hours are possible as well.
@@ -54,11 +49,12 @@ export class TeacherTimetable
         // no lesson found for this class
         continue;
 
+      hadAddedNewLessons = true;
       this.lessons[day][hourIndex] = ISCOOL.toTeacherLesson(lesson.Lessons[lessonIndex]);
       this.emit('newLesson', day, hourIndex, this.lessons[day][hourIndex]);
     } // end of for
 
-    return this;
+    return hadAddedNewLessons;
   }
 
   /**
@@ -69,6 +65,7 @@ export class TeacherTimetable
    * timetable.applyChanges(changes);
    */
   public applyChanges(changes: IChangeIscool[]) {
+    // TODO: Migrate to IscoolDate
     for (const changeObj of changes) {
       const modification = ISCOOL.toModification(changeObj);
       const day = ISCOOL.toDate(changeObj.Date).getDay() as DayOfWeek;

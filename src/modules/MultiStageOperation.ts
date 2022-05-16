@@ -6,7 +6,7 @@ import { ListenerSignature, TypedEmitter } from 'tiny-typed-emitter';
 export interface MultiStageOperationEvents<Success, Error> {
   ready: (result: Success) => void;
   error: (err: Error) => void;
-  delay: () => void;
+  delay: (time: number) => void;
 }
 
 type TypeSafeMSOE<Success, Error, T> = Omit<T, keyof MultiStageOperationEvents<Success, Error>> &
@@ -17,7 +17,7 @@ type TypeSafeMSOE<Success, Error, T> = Omit<T, keyof MultiStageOperationEvents<S
  * @abstract
  * @extends TypedEmitter for the ability to emit and subscribe to events
  * @author Itay Schechner
- * @version 2022.0.1
+ * @version 1.0.0
  */
 abstract class MultiStageOperation<
   Success,
@@ -29,17 +29,35 @@ abstract class MultiStageOperation<
     this.emit('error', ...params);
   }
 
-  protected emitDelay() {
-    const params = [] as Parameters<TypeSafeMSOE<Success, Error, T>['delay']>; // this must be [] type
+  protected emitDelay(time: number) {
+    const params = [time] as Parameters<TypeSafeMSOE<Success, Error, T>['delay']>; // this must be [] type
     this.emit('delay', ...params);
   }
 
-  protected emitReady(res: Success) {
-    const params = [res] as Parameters<TypeSafeMSOE<Success, Error, T>['ready']>; // this must be [Success] type
+  protected emitReady() {
+    const params = [this.getResult()] as Parameters<TypeSafeMSOE<Success, Error, T>['ready']>; // this must be [Success] type
     this.emit('ready', ...params);
   }
 
+  /** Type-safe subscribe to delay, error and ready events */
+  public subscribe<K extends keyof MultiStageOperationEvents<Success, Error>>(
+    event: K,
+    cb: MultiStageOperationEvents<Success, Error>[K],
+  ) {
+    this.on(event, cb as TypeSafeMSOE<Success, Error, T>[typeof event]);
+  }
+
   public abstract begin(): Promise<void>;
+
+  /**
+   * Return the result of the operation
+   */
+  protected abstract getResult(): Success;
+
+  /**
+   * Abort the operation
+   */
+  public abstract abort(): void;
 }
 
 export default MultiStageOperation;

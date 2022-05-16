@@ -1,24 +1,20 @@
-import { IscoolClassLookup } from '@yanshoof/iscool';
+import { IscoolRequestQueue } from '@yanshoof/iscool';
 import { TeacherListQuery } from '../modules/TeacherListQuery';
 import axios from 'axios';
 
 axios.defaults.adapter = require('axios/lib/adapters/http');
 
+const queue = new IscoolRequestQueue();
+
 describe('tests the teacher lookup method', () => {
   jest.setTimeout(40000);
 
-  let classIds: number[][] = []; // mock given from client
   const school = '460030';
 
-  it('Fetches classes', async () => {
-    const classLookup = await IscoolClassLookup.fromSchool(school);
-    classIds = classLookup.classIds;
-  });
-
   it('Builds teacher list of school', async () => {
-    const query = new TeacherListQuery(school, classIds);
-    query.on('delay', () => {
-      console.log('The query will take a little longer...');
+    const query = new TeacherListQuery(queue, { school, givenClassIds: [] });
+    query.on('delay', (time) => {
+      console.log('Expected delay', time);
     });
     query.on('error', (code) => {
       console.log('Ran into error with error code', code);

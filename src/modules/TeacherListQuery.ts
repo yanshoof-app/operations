@@ -1,7 +1,10 @@
-import { IScheduleResponse } from '@yanshoof/iscool';
+import { ILessonArrMemberIscool, IscoolRequestQueue } from '@yanshoof/iscool';
 import { ITeacherListEvents, TeacherList } from '../utils/TeacherList';
-import { MultiClassQuery } from './MultiClassQuery';
+import { MultiClassRequestOperation } from './MultiClassReuqestOperation';
 
+/**
+ * Represents the query params required for the operation
+ */
 export interface ITeacherListQueryParams {
   /**
    * The school to query
@@ -17,28 +20,32 @@ export interface ITeacherListQueryParams {
  * Represents a teacher list query
  * @author Itay Schechner
  * @version 1.0.0
- * @extends MultiClassQuery
  */
-export class TeacherListQuery extends MultiClassQuery<string[], ITeacherListEvents> {
+export class TeacherListQuery extends MultiClassRequestOperation<string[], ITeacherListEvents> {
   private teacherList: TeacherList;
 
-  /**
-   * Constructs a new TeacherListQuery object
-   * @param params the params required for the query
-   */
-  constructor({ school, givenClassIds }: ITeacherListQueryParams) {
-    super(school, givenClassIds);
+  constructor(queue: IscoolRequestQueue, { school, givenClassIds }: ITeacherListQueryParams) {
+    super(queue, school, givenClassIds);
     this.teacherList = new TeacherList();
     this.teacherList.on('teacherAdded', (name) => {
       this.emit('teacherAdded', name);
     });
   }
 
-  protected async forEachClass(classId: number): Promise<void> {
-    const { Schedule } = await this.fetchUntilResult<IScheduleResponse>('schedule', this.school, classId);
-    this.teacherList.fromIscool(Schedule);
+  protected onScheduleRequestDone(
+    _school: string | number,
+    _classId: number,
+    schedule: ILessonArrMemberIscool[],
+  ): void {
+    this.teacherList.fromIscool(schedule);
+    this.emit('nextClass');
   }
-  protected result(): string[] {
+
+  protected onChangesRequestDone(): void {
+    // no changes requests in operation
+  }
+
+  protected getResult(): string[] {
     return this.teacherList.teachers;
   }
 }

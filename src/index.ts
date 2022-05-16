@@ -2,13 +2,15 @@ import { createServer } from 'http';
 import { TimetableServer } from './ws/TimetableServer';
 import { ListServer } from './ws/ListServer';
 import './setup';
+import { IscoolRequestQueue } from '@yanshoof/iscool';
 
 const API_PREFIX = '/api';
 const TIMETABLE_URL = '/timetable';
 const LIST_URL = '/list';
 
-const timetableServer = new TimetableServer();
-const listServer = new ListServer();
+const requestQueue = new IscoolRequestQueue();
+const timetableServer = new TimetableServer(requestQueue);
+const listServer = new ListServer(requestQueue);
 const server = createServer();
 
 server.on('upgrade', (req, socket, head) => {
