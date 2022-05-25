@@ -13,6 +13,10 @@ const timetableServer = new TimetableServer(requestQueue);
 const listServer = new ListServer(requestQueue);
 const server = createServer();
 
+requestQueue.on('sleep', (time) => {
+  console.log('Delay until next iscool fetch: %dms', time);
+});
+
 server.on('upgrade', (req, socket, head) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   if (url.pathname == API_PREFIX + TIMETABLE_URL) timetableServer.handleUpgrade(req, url, socket, head);

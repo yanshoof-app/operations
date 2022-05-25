@@ -10,6 +10,7 @@ import {
   IClassesResponse,
   IScheduleResponse,
   IChangesResponse,
+  IscoolServerException,
 } from '@yanshoof/iscool';
 import { ErrorCode } from '../types';
 
@@ -101,8 +102,18 @@ export abstract class RequestQueueOperation<
       this.onUnexpectedRequestError(task, err);
     });
 
-    this.queue.enqueue(task);
-    this.pendingRequests.add(task);
+    // add task to queue, abort if too busy
+    try {
+      this.queue.enqueue(task);
+      this.pendingRequests.add(task);
+    } catch (err) {
+      // if error, abort and throw to the enqueuer
+      if (err instanceof IscoolServerException) {
+        this.abort();
+        this.emitError(ErrorCode.TIMEOUT_EXCEEDED);
+      }
+      throw err;
+    }
   }
 
   /**
