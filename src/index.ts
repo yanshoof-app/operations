@@ -13,6 +13,8 @@ const timetableServer = new TimetableServer(requestQueue);
 const listServer = new ListServer(requestQueue);
 const server = createServer();
 
+IscoolRequestQueue.DELAY_INTERVAL = 300;
+
 requestQueue.on('sleep', (time) => {
   console.log('Delay until next iscool fetch: %dms', time);
 });

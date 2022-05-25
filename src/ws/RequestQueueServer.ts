@@ -43,6 +43,7 @@ export abstract class RequestQueueServer<
     });
     operation.subscribe('ready', () => {
       ws.send('success');
+      ws.close();
     });
     ws.onClose(() => {
       operation.abort();
