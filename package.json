@@ -18,6 +18,7 @@
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags",
     "test:changed": "jest --config jest.config.json --onlyChanged",
+    "test:simple": "jest --config jest.config.json -t 'Simpletest'",
     "dev": "nodemon src/index.ts -x ts-node",
     "start": "node lib/index.js"
   },
