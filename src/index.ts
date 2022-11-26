@@ -29,4 +29,4 @@ server.on('listening', () => {
   console.log('READY');
 });
 
-server.listen(8080);
+server.listen(process.env.PORT || 8080);
